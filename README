@@ -1,0 +1,40 @@
+This is a git respository for the key-value cache application/client challenge set for me by Imperva.  The challenge was:
+-------------------------------------------------------------------------------------------------------
+
+Implement a key-value data store server and client. Keys are of type string and value is a list (ordered) of strings
+
+*Data should be persistent
+*Access to data (reading, writing) should be done via network (you can use *standard layer 7 protocols or implement your own over TCP)
+Server should support concurrent clients
+*Server should cache data to reduce reads from the filesystem
+ 
+
+Implement the following API:
+
+*get(key) returns a list from data store
+*append(key,value) – append the value to the list
+*prepend(key,value) – prepend a value to the list
+*set(key, []) – set a key/value pair (overwrite if exists)
+ 
+
+Please code the project in Python and upload it to Github.
+
+ 
+
+Points for discussion
+
+Considering your implementation, what are the known limits/issue (scale, data integrity, performance)
+What will happens if the server terminates abruptly?
+----------------------------------------------------------------------------------------------------
+
+Two python scripts have been created - one is datastore.py, which is the server app, and the other is a client with some test API calls and dummy data.  Both scripts have been coded and tested using Python 3.6.7.  Although they haven't been tested with Python 2.x, it is believed they are unlikely to execute properly due to differences in function calls between the Python versions.
+
+Requirements:
+
+All requirements can be found in requirements.txt
+
+
+
+
+
+
