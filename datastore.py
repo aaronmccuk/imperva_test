@@ -15,28 +15,30 @@ app = Flask(__name__)
 
 @app.route('/get/<key>', methods=['POST'])
 def get(key):
-    # Return a value list from cache
-    global cache
-    with lock: 
-        # Check that an actual key has been received
-        if isinstance(key, str):
-            # Check if the key is already in the cache
-            if key in cache:
-                return json.dumps(cache[key])
+    with app.app_context():
+        # Return a value list from cache
+        global cache
+        with lock: 
+            # Check that an actual key has been received
+            if isinstance(key, str):
+                # Check if the key is already in the cache
+                if key in cache:
+                    return json.dumps(cache[key])
+                else:
+                    return jsonify("Key is not in cache")
             else:
-                return jsonify("Key is not in cache")
-        else:
-            return jsonify("Key is not a string")
+                return jsonify("Key is not a string")
 
 @app.route('/set/<key>/<values>', methods=['POST'])
 def set(key,values):
-    global cache
-    with lock:
-        # Convert to a list from the values string
-        values = ast.literal_eval(values)
-        cache.update({key: values})
-        _fileWrite()
-    return jsonify("Cache updated")
+    with app.app_context():
+        global cache
+        with lock:
+            # Convert to a list from the values string
+            values = ast.literal_eval(values)
+            cache.update({key: values})
+            _fileWrite()
+        return jsonify("Cache updated")
 
 
 @app.route('/append/<key>/<value>', methods=['POST'])
@@ -66,11 +68,11 @@ def prepend(key, value):
             if value in cache[key]:
                 return "Key-Value already exists"
             else:
-                cache[key].insert(0,value)
+                cache[key].insert(0, value)
                 _fileWrite()
                 return "Key exists. Value added"
         else:
-            cache.update(key, [value])
+            cache.update({key: [value]})
             _fileWrite()
             return "New key and value added"
 
