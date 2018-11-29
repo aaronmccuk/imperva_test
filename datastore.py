@@ -6,11 +6,15 @@
 import json    # Library for json file read/write
 from flask import Flask, request, jsonify # use Flask web framework
 from threading import Lock
-import fcntl   #Library for file locking
+import fcntl   # Library for file locking
 import ast
+import atexit  # Lets us run codes on script exit
 
 lock = Lock()           # Create a lock to handle concurrent access
 cache = dict()          # Key/Values Cache
+#open file for writing once.  This is still inefficient though
+f = open("cache.json", "w")
+
 app = Flask(__name__)
 
 @app.route('/get/<key>', methods=['POST'])
@@ -78,19 +82,16 @@ def prepend(key, value):
 
 
 def _fileWrite():
-    global cache
+    global cache, f
     # Write cache to file for persistance
-    f = open("cache.json", "w")
-
     # Lock the file to prevent multiple, concurrent  writes    
     fcntl.flock(f, fcntl.LOCK_EX | fcntl.LOCK_NB)
     f.write(json.dumps(cache))
     # Unlock and close the file
     fcntl.flock(f, fcntl.LOCK_UN)
-    f.close()
 
 def _fileRead():
-    global cache
+    global cache, f
     try:
         # Read cache from file
         # No need to lock file as this only happens at process boot
@@ -100,9 +101,14 @@ def _fileRead():
         # If file doesn't exist, return empty dict braces
         # file will be created on next _fileWrite()
         return(json.loads("{}"))
+
+def exit_handler():
+    global f    
+    f.close()
                                                               
 if __name__ == '__main__':
     cache = dict(_fileRead())    #read keys/values from file at boot
+    atexit.register(exit_handler) # Close file at exit
     app.run(threaded=True, debug=True)
 
 # endfile
