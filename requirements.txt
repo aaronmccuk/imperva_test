@@ -16,7 +16,7 @@ itsdangerous==1.1.0
 Jinja2==2.10
 louis==3.5.0
 macaroonbakery==1.1.3
-Mako==1.0.7
+Mako==1.2.2
 MarkupSafe==1.1.0
 onboard==1.4.1
 PAM==0.4.2
